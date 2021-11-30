@@ -2,14 +2,41 @@
 //* Đối tượng Validator
 Validator = (options) => {
     // lay element form can validate
-    var formElement = document.querySelector(options.form)
+    var formElement = document.querySelector(options.form);
     var selectorRules = {};
 
     if (formElement) {
         // Bỏ hành vi mặc định submit
         formElement.onsubmit = (e) => {
             e.preventDefault();
+
+            var isFormValid = true;
+
+            // Thực hiện lặp qua từng rule và validate
+            options.rules.forEach((rule) => {
+                var inputElement = formElement.querySelector(rule.selector);
+                var isValid = validate(inputElement, rule);
+                if (!isValid) {
+                    isFormValid = false;
+                }
+            });
+
+            if (isFormValid) {
+                // submit vs JS
+                if (typeof options.onSubmit === 'function') {
+                    // select tất cả field name để trả ra khi bấm submit
+                    var enableInputs = formElement.querySelectorAll('[name]');
+                    var formValues = Array.from(enableInputs).reduce((values, input) => {
+                        return (values[input.name] = input.value) && values;
+                    }, {});
+                    options.onSubmit(formValues);
+                } else {
+                    formElement.submit(); //submit vs hành vi mặc định
+                }
+
+            }
         }
+
         // Lặp qua rules và xử lí onblur
         options.rules.forEach((rule) => {
             //* luu lai rules cho moi input
@@ -45,7 +72,7 @@ Validator = (options) => {
         for (var i = 0; i < rules.length; ++i) {
             errorMessage = rules[i](inputElement.value);
             if (errorMessage) {
-             break;   
+                break;
             }
         }
         if (errorMessage) {
@@ -55,6 +82,7 @@ Validator = (options) => {
             errorElement.innerText = ('');
             inputElement.parentElement.classList.remove('invalid');
         }
+        return !errorElement;
     }
 }
 

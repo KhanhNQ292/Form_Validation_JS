@@ -55,7 +55,7 @@
       errorSelector: '.form-message',
       rules: [
         Validator.isRequired('#fullname'),
-        Validator.minLength('#fullname',5),
+        Validator.minLength('#fullname', 5),
         Validator.isRequired('#email'),
         Validator.isEmail('#email'),
         Validator.isRequired('#password'),
@@ -63,7 +63,10 @@
         Validator.isConfirmed('#password_confirmation', () => {
           return document.querySelector('#form-1 #password').value;
         }, 'Password resubmitation incorrect')
-      ]
+      ],
+      onSubmit: function (data) {
+        console.log(data);
+      }
     });
   </script>
 </body>
